@@ -1,0 +1,21 @@
+#!/bin/sh
+
+echo "\r\n********build common.********"
+cd $HOME/bb/app/common
+pwd
+cmake -D TARGET_P=x86 ./
+make
+
+echo "\r\n********build xml2.********"
+cd $HOME/bb/app/lib/libxml2
+pwd
+cmake -D TARGET_P=x86 ./
+make
+
+echo "\r\n********build xml project.********"
+cd $HOME/bb/app/xml
+pwd
+cmake -D TARGET_P=x86 ./
+make -lpthread
+
+

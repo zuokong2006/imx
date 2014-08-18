@@ -1,0 +1,13 @@
+#!/bin/sh
+
+cd $HOME/bb/app/common
+pwd
+cmake -D TARGET_P=x86 ./
+make
+
+cd $HOME/bb/app/fifo
+pwd
+cmake -D TARGET_P=x86 ./
+make -lpthread
+
+

@@ -1,0 +1,15 @@
+EXEC	= file_test
+OBJS    = file_test.o
+
+CROSS	= arm-linux-gnueabihf-
+CC		= $(CROSS)gcc 
+STRIP	= $(CROSS)strip
+CFLAGS	= -Wall -g -O2
+
+all:  clean $(EXEC)
+
+$(EXEC):$(OBJS) ../common/debug.o
+	$(CC) -g -o $@ ../common/debug.o $(OBJS)
+
+clean:
+	-rm -f $(EXEC) *.o

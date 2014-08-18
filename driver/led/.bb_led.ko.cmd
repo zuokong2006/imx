@@ -1,0 +1,1 @@
+cmd_/home/zuokong/bb/driver/led/bb_led.ko := arm-linux-gnueabihf-ld -EL -r  -T /home/zuokong/bb/kernel/kernel/scripts/module-common.lds --build-id  -o /home/zuokong/bb/driver/led/bb_led.ko /home/zuokong/bb/driver/led/bb_led.o /home/zuokong/bb/driver/led/bb_led.mod.o

@@ -1,0 +1,8 @@
+CROSS	= arm-linux-gnueabihf-
+CC		= $(CROSS)gcc 
+
+debug.o:debug.c
+	$(CC) -O -g -c debug.c -o debug.o
+
+clean:
+	rm -f *.o

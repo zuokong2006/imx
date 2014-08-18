@@ -1,0 +1,1 @@
+cmd_/home/zuokong/bb/driver/timer/timer.ko := arm-linux-gnueabihf-ld -EL -r  -T /home/zuokong/bb/kernel/kernel/scripts/module-common.lds --build-id  -o /home/zuokong/bb/driver/timer/timer.ko /home/zuokong/bb/driver/timer/timer.o /home/zuokong/bb/driver/timer/timer.mod.o

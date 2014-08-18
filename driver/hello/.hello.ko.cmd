@@ -1,0 +1,1 @@
+cmd_/home/zuokong/bb/driver/hello/hello.ko := arm-linux-gnueabihf-ld -EL -r  -T /home/zuokong/bb/kernel/kernel/scripts/module-common.lds --build-id  -o /home/zuokong/bb/driver/hello/hello.ko /home/zuokong/bb/driver/hello/hello.o /home/zuokong/bb/driver/hello/hello.mod.o
