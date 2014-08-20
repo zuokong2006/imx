@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <!-- A板电机 -->
+  <items id = "1" maxsteps = "5500" initsteps = "500">
+    <!-- 初始位 -->
+    <item id = "1" steps = "0" fixsteps = "123" sensor = "1"/>
+  </items>
+  <items id = "3" maxsteps = "5500" initsteps = "500">
+    <!-- 初始位 -->
+    <item id = "1" steps = "0" fixsteps = "123" sensor = "3"/>
+  </items>
+  <items id = "4" maxsteps = "5500" initsteps = "500">
+    <!-- 初始位 -->
+    <item id = "1" steps = "0" fixsteps = "123" sensor = "4"/>
+  </items>
+  <items id = "5" maxsteps = "5500" initsteps = "500">
+    <!-- 初始位 -->
+    <item id = "1" steps = "0" fixsteps = "123" sensor = "5"/>
+  </items>
+  <items id = "7" maxsteps = "1510" initsteps = "66">
+    <!-- RBC池位 -->
+    <item id = "1" steps = "0" fixsteps = "10" sensor = "6"/>
+    <!-- WBC池位 -->
+    <item id = "2" steps = "328" fixsteps = "0" sensor = "7"/>
+    <!-- DIFF池位 -->
+    <item id = "3" steps = "748" fixsteps = "0" sensor = "8"/>
+    <!-- 开放采样位 -->
+    <item id = "4" steps = "1463" fixsteps = "0" sensor = "9"/>
+  </items>
+  <items id = "8" maxsteps = "710" initsteps = "66">
+    <!-- 初始位 -->
+    <item id = "1" steps = "0" fixsteps = "19" sensor = "10"/>
+    <!-- 隔离气泡位 -->
+    <item id = "2" steps = "101" fixsteps = "0" sensor = "0"/>
+    <!-- DIFF池位 -->
+    <item id = "3" steps = "539" fixsteps = "0" sensor = "0"/>
+    <!-- 阻抗池位 -->
+    <item id = "4" steps = "487" fixsteps = "0" sensor = "0"/>
+    <!-- 开放采样位 -->
+    <item id = "5" steps = "609" fixsteps = "0" sensor = "0"/>
+  </items>
+
+  <!-- B板电机 -->
+  
+</root>

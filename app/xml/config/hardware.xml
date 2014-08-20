@@ -1,53 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
-	<!-- 硬件相关设置 -->
-	<hardware>
-		<!-- 驱动板相关设置 -->
-		<driver_board>
-			<driver_board_name value="./power_file"/>
-			<driver_board_protocol value="protocol1"/>
-			<driver_board_dev value="uart"/>
-			<!-- 串口0代表 /dev/ttyS0 可以认为是串口1 2-->
-			<driver_board_uart_num value="1"/>
-			<!-- 串口波特率 -->
-			<driver_board_uart_baud value="38400"/>
-			<!-- 串口数据位大小 8 7 6 5-->
-			<driver_board_uart_data_size value="8"/>
-			<!-- 串口奇偶校验 0 :无校验 1:奇校验  2：偶校验 3 :空白校 -->
-			<driver_board_uart_check_pri value="0"/>
-			<!-- 串口停止位 1 ：1位停止位 2：2位停止位-->
-			<driver_board_uart_stop value="1"/>
-			<!-- 串口数据流控制   0 无流控 1 有流控 -->
-			<driver_board_uart_data_control value="0"/>
-			<!-- 设备数据缓存大小-->
-			<driver_board_dev_buffer_size value="60000"/>
-		</driver_board>
-		<!-- 自动进样板相关设置 -->
-		<auto_samp_board>
-			<auto_samp_board_name value="./auto_samp_file"/>
-			<auto_samp_board_protocol value="protocol2"/>
-			<auto_samp_board_dev value="uart"/>
-			<!-- 串口0代表 /dev/ttyS0 可以认为是串口1 -->
-			<auto_samp_board_uart_num value="0"/>
-			<!-- 串口波特率 -->
-			<auto_samp_board_uart_baud value="38400"/>
-			<!-- 串口数据位大小 8 7 6 5-->
-			<auto_samp_board_uart_data_size value="8"/>
-			<!-- 串口奇偶校验 0 :无校验 1:奇校验  2：偶校验 3 :空白校 -->
-			<auto_samp_board_uart_check_pri value="0"/>
-			<!-- 串口停止位 1 ：1位停止位 2：2位停止位-->
-			<auto_samp_board_uart_stop value="1"/>
-			<!-- 串口数据流控制   0 无流控 1 有流控 -->
-			<auto_samp_board_uart_data_control value="0"/>
-			<!-- 设备数据缓存大小-->
-			<auto_samp_board_dev_buffer_size value="60000"/>
-		</auto_samp_board>
-		<!--数据板相关设置 -->
-		<data_board>
-			<data_board_name value="./data_file"/>
-			<data_board_protocol value="protocol3"/>
-			<data_board_dev value="uart"/>
-			<data_board_buffer value="40"/>
-		</data_board>
-	</hardware>
+	<driver_board value="protocol1">
+		<driver_board_name value="./power_file"/>
+		<driver_board_protocol value="protocol1"/>
+		<driver_board_dev value="uart"/>
+		<!-- 串口0代表 /dev/ttyS0 可以认为是串口1 2-->
+		<driver_board_uart_num value="1"/>
+		<!-- 串口波特率 -->
+		<driver_board_uart_baud value="38400"/>
+		<!-- 串口数据位大小 8 7 6 5-->
+		<driver_board_uart_data_size value="8"/>
+		<!-- 串口奇偶校验 0 :无校验 1:奇校验  2：偶校验 3 :空白校 -->
+		<driver_board_uart_check_pri value="0"/>
+		<!-- 串口停止位 1 ：1位停止位 2：2位停止位-->
+		<driver_board_uart_stop value="1"/>
+		<!-- 串口数据流控制   0 无流控 1 有流控 -->
+		<driver_board_uart_data_control value="0"/>
+		<!-- 设备数据缓存大小-->
+		<driver_board_dev_buffer_size value="60000"/>
+	</driver_board>
+	<!-- 自动进样板相关设置 -->
+	<auto_samp_board value="protocol2">
+		<auto_samp_board_name value="./auto_samp_file"/>
+		<auto_samp_board_protocol value="protocol2"/>
+		<auto_samp_board_dev value="uart"/>
+		<!-- 串口0代表 /dev/ttyS0 可以认为是串口1 -->
+		<auto_samp_board_uart_num value="0"/>
+		<!-- 串口波特率 -->
+		<auto_samp_board_uart_baud value="38400"/>
+		<!-- 串口数据位大小 8 7 6 5-->
+		<auto_samp_board_uart_data_size value="8"/>
+		<!-- 串口奇偶校验 0 :无校验 1:奇校验  2：偶校验 3 :空白校 -->
+		<auto_samp_board_uart_check_pri value="0"/>
+		<!-- 串口停止位 1 ：1位停止位 2：2位停止位-->
+		<auto_samp_board_uart_stop value="1"/>
+		<!-- 串口数据流控制   0 无流控 1 有流控 -->
+		<auto_samp_board_uart_data_control value="0"/>
+		<!-- 设备数据缓存大小-->
+		<auto_samp_board_dev_buffer_size value="60000"/>
+	</auto_samp_board>
+	<!--数据板相关设置 -->
+	<data_board value="protocol3">
+		<data_board_name value="./data_file"/>
+		<data_board_protocol value="protocol3"/>
+		<data_board_dev value="uart"/>
+		<data_board_buffer value="40"/>
+	</data_board>
 </root>

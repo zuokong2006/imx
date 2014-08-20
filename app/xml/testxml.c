@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
         if((!xmlStrcmp(cur->name, (const xmlChar *)"hardware")))
         {
             str = xmlNodeGetContent(cur);
-            DEBUG_MSG("D:hardware-> %s\r\n", str);
+            DEBUG_MSG("D:hardware\r\n");
             xmlFree(str);
             break;
         }
@@ -68,10 +68,52 @@ int main(int argc, char *argv[])
     cur = cur->children;
     while(NULL != cur)
     {
-        str = xmlNodeGetContent(cur);
-        DEBUG_MSG("D:hardware children-> %s\r\n", str);
-        xmlFree(str);
+        if((!xmlStrcmp(cur->name, (const xmlChar *)"driver_board")))
+        {
+            str = xmlNodeGetContent(cur);
+            DEBUG_MSG("D:driver_board\r\n");
+            xmlFree(str);
+            break;
+        }
         cur = cur->next;
+    }
+    if(NULL == cur)
+    {
+        DEBUG_MSG("E:is not driver_board node.\r\n");
+        xmlFreeDoc(doc);
+        exit(0);
+    }
+
+    cur = cur->children;
+    while(NULL != cur)
+    {
+        if((!xmlStrcmp(cur->name, (const xmlChar *)"driver_board_uart_baud")))
+        {
+            str = xmlNodeGetContent(cur);
+            DEBUG_MSG("D:driver_board_uart_baud\r\n");
+            xmlFree(str);
+            break;
+        }
+        cur = cur->next;
+    }
+    if(NULL == cur)
+    {
+        DEBUG_MSG("E:is not driver_board_uart_baud node.\r\n");
+        xmlFreeDoc(doc);
+        exit(0);
+    }
+
+    xmlAttrPtr attrPtr = NULL;
+    attrPtr = cur->properties;
+    while(NULL != attrPtr)
+    {
+        if(1 == xmlStrEqual(attrPtr->name, "value"))
+        {
+            str = xmlGetProp(cur, attrPtr->name);
+            DEBUG_MSG("D:value-> %s\r\n", str);
+            xmlFree(str);
+        }
+        attrPtr = attrPtr->next;
     }
 
     xmlFreeDoc(doc);
