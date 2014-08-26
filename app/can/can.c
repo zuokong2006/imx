@@ -1,7 +1,7 @@
-/* name: server.c
- * description: CAN测试程序
+/* name: can.c
+ * description: CAN驱动接口
  * author: zuokongxiao
- * date: 2014-08-19
+ * date: 2014-08-21
  */
 #include <stdio.h>
 #include <sys/ioctl.h>
@@ -165,7 +165,16 @@ static int can_write_test(int fd, uint8 ucBoardType)
     }
 }
 
-/* 主函数 */
+
+
+int can_open()
+{
+    
+}
+
+
+
+
 int main(int argc, char *argv[])
 {
     int s;
