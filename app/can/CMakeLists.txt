@@ -5,6 +5,7 @@
 
 #工程名称
 PROJECT(cantest)
+PROJECT(cantcmd)
 
 #CMAKE版本
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
@@ -47,6 +48,7 @@ AUX_SOURCE_DIRECTORY(. DIR_SRCS)
 
 #指示变量DIR_SRCS中的源文件需要编译成可执行文件
 ADD_EXECUTABLE(cantest cantest)
+ADD_EXECUTABLE(cancmd cancmd can)
 
 #指明可执行文件需要连接的链接库
 #TARGET_LINK_LIBRARIES(testxml ${CMAKE_THREAD_LIBS_INIT})
@@ -57,5 +59,5 @@ ADD_EXECUTABLE(cantest cantest)
 # TARGET_LINK_LIBRARIES(testxml /usr/arm/lib/libxml2/lib/libxml2.so)
 #ENDIF()
 TARGET_LINK_LIBRARIES(cantest ${PROJECT_SOURCE_DIR}/../common/libcommon.a)
-
+TARGET_LINK_LIBRARIES(cancmd ${PROJECT_SOURCE_DIR}/../common/libcommon.a)
 

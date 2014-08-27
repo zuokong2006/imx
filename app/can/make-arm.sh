@@ -15,6 +15,11 @@ then
     rm cantest
 fi
 
+if [ -f cancmd ]
+then 
+    rm cancmd
+fi
+
 cmake -D TARGET_P=arm ./
 
 make -lpthread

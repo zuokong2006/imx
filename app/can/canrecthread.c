@@ -15,12 +15,8 @@
 #include <errno.h>
 #include <time.h>
 #include <string.h>
-#include <linux/can.h>
-#include <linux/can/error.h>
-#include <linux/can/raw.h>
 #include "deftype.h"
 #include "debug.h"
-#include "can.h"
 
 #ifndef AF_CAN
 #define AF_CAN 29
@@ -143,7 +139,7 @@ int can_close(void)
 }
 
 /* ×èÈû¶ÁCAN */
-int can_read(struct can_frame *pstCanFrame)
+int can_read(can_frame *pstCanFrame)
 {
     int ret = 0;
     
@@ -161,7 +157,7 @@ int can_read(struct can_frame *pstCanFrame)
     /* ÅÐ¶ÏÉè±¸ÊÇ·ñ´íÎó */
     if(pstCanFrame->can_id & CAN_ERR_FLAG)
     { 
-        handle_err_frame(pstCanFrame);
+        handle_err_frame(*pstCanFrame);
         DEBUG_MSG("E:CAN device error!\r\n");
         return -1;
     }
@@ -172,7 +168,7 @@ int can_read(struct can_frame *pstCanFrame)
 }
 
 /* can·¢ËÍ */
-int can_write(struct can_frame *pstCanFrame)
+int can_write(can_frame *pstCanFrame)
 {
     if((canfd <= 0) || INVALID_POINTER(pstCanFrame))
     {
@@ -197,13 +193,13 @@ int can_write_test(uint8 ucBoardType)
 
     /* aa 00 03 01 00 01 05 55 */
     /* CAN ID ÉèÖÃ */
-    if((0 < ucBoardType) && (64 >= ucBoardType))
+    if((0 < ucBoardType) && (64= > ucBoardType))
     {
-        stCanFrame.can_id = 0x80000000 | (ucBoardType<<16);
+        pstCanFrame->can_id = 0x80000000 | (ucBoardType<<16);
     }
     else
     {
-        stCanFrame.can_id = 0x80010000;
+        pstCanFrame->can_id = 0x80010000;
     }
     stCanFrame.can_dlc = 8;
     stCanFrame.data[0] = 0xaa;
