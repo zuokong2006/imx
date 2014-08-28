@@ -15,10 +15,15 @@
 #include <errno.h>
 #include <time.h>
 #include <string.h>
+#include <linux/can.h>
+#include <linux/can/error.h>
+#include <linux/can/raw.h>
+#include <pthread.h>
+#include <semaphore.h>
 #include "deftype.h"
 #include "debug.h"
 #include "can.h"
-
+#include "canrecthread.h"
 
 /* 命令字符串转换 */
 static int cmd_string_convert(char *pcCmd, const char *pcCmdBuf)
@@ -99,30 +104,93 @@ static int cmd_string_convert(char *pcCmd, const char *pcCmdBuf)
 /* 发送数据到CAN */
 static int send_data_to_can(int lBoardType, char *pcCmd, int lCmdLen)
 {
-    struct can_frame astCanFrame[43];
+    struct can_frame stCanFrame;
     int i = 0;
+    uint8 ucCnt = 0;
+    uint16 unTemp = 0;
     
-    if(INVALID_POINTER(pcCmd))
+    if(INVALID_POINTER(pcCmd) || (1 > lCmdLen) || (1 > lBoardType))
     {
         DEBUG_MSG("E:input param error!\r\n");
         return -1;
     }
-    if(8 >= lCmdLen)
+    /*! 计算数据需要几个报文帧 */
+    unTemp = lCmdLen / 8;
+    if(0x0000 != (lCmdLen & 0x0007))
     {
-        
-        
+        unTemp = unTemp + 1;
+    }
+    /*! 数据不大于8字节，无需分段 */
+    if(1 == unTemp)
+    {
+        stCanFrame.can_id = 0x80000000 | (lBoardType << 16) |FRAME_NONE_SEG;
+        stCanFrame.can_dlc = lCmdLen;
+        for(i = 0; i < lCmdLen; i++)
+        {
+            stCanFrame.data[i] = pcCmd[i];
+        }
+        if(0 > can_write(&stCanFrame))
+        {
+            return -1;
+        }
     }
     else
     {
-    
-    
+        /*! 第一个分段报文 */
+        stCanFrame.can_id = 0x80000000 | (lBoardType << 16) | FRAME_FIRST_SEG;
+        stCanFrame.can_dlc = 8;
+        for(i = 0; i<8; i++)
+        {
+            stCanFrame.data[i] = *pcCmd;
+            pcCmd++;
+        }
+        if(0 > can_write(&stCanFrame))
+        {
+            return -1;
+        }
+        unTemp--;
+        ucCnt = 1;
+        /*! 中间分段报文 */
+        while(1 != unTemp)
+        {
+            stCanFrame.can_id = 0x80000000 | (lBoardType << 16) | FRAME_MIDDLE_SEG | (ucCnt << 8);
+            stCanFrame.can_dlc = 8;
+            for(i = 0; i<8; i++)
+            {
+                stCanFrame.data[i] = *pcCmd;
+                pcCmd++;
+            }
+            if(0 > can_write(&stCanFrame))
+            {
+                return -1;
+            }
+            unTemp--;
+            ucCnt++;
+        }
+        /*! 最后分段报文 */
+        if(0x0000 == (lCmdLen & 0x0007))
+        {
+            unTemp = 8;
+        }
+        else
+        {
+            unTemp = lCmdLen & 0x0007;
+        }
+        ucCnt = 0;
+        stCanFrame.can_id = 0x80000000 | (lBoardType << 16) | FRAME_END_SEG | (ucCnt << 8);
+        stCanFrame.can_dlc = unTemp;
+        for(i = 0; i<unTemp; i++)
+        {
+            stCanFrame.data[i] = *pcCmd;
+            pcCmd++;
+        }
+        if(0 > can_write(&stCanFrame))
+        {
+            return -1;
+        }
     }
 
-    
-    
-    
-//int can_write(struct can_frame *pstCanFrame)
-
+    return 0;
 }
 
 /* 主函数 */
@@ -131,6 +199,7 @@ int main(int argc, char *argv[])
     int lBoardType = 0, i = 0, lCmdLen = 0;
     char acCmdBuf[1024] = {0};
     char acCmd[340] = {0};
+    pthread_t thread_pid = 0;
     
     /* 打开CAN设备 */
     if(0 > can_open())
@@ -138,7 +207,12 @@ int main(int argc, char *argv[])
         return -1;
     }
     /* 创建接收线程 */
-    //todo
+    if(0 != pthread_create(&thread_pid, NULL, can_rec_thread, NULL))
+    {
+        ERROR_MSG("E:thread create failed!\r\n");
+        return -1;
+    }
+    DEBUG_MSG("D:thread_create is ok!\r\n");
    
     while(1)
     {
@@ -185,7 +259,7 @@ int main(int argc, char *argv[])
         //todo...
         
         /* can发送数据 */
-        
+        send_data_to_can(lBoardType, acCmd, lCmdLen);
     }
 }
 

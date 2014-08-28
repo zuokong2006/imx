@@ -1,16 +1,16 @@
-/* name: can.h
- * description: CAN驱动接口
+/* name: canrecthread.h
+ * description: CAN接收线程
  * author: zuokongxiao
- * date: 2014-08-21
+ * date: 2014-08-28
  */
 
-#include <linux/can.h>
-#include <linux/can/error.h>
-#include <linux/can/raw.h>
+#ifndef __CANRECTHREAD_H
+#define __CANRECTHREAD_H
 
-int can_open(void);
-int can_close(void);
-int can_read(can_frame *pstCanFrame);
-int can_write(can_frame *pstCanFrame);
-int can_write_test(uint8 ucBoardType);
+
+void *can_rec_thread(void *arg);
+
+
+#endif
+
 
