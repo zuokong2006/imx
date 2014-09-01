@@ -424,8 +424,8 @@ int32 check_protocol_frame(uint8 ucNum, frame_check_t *pstFrame)
                 pstFrame->stReturnBuf.pucStateBuf = NULL;
                 //lRet = send_return_frame(&s_stReturnBuf);
                 /*! 打印错误码 */
-                put_hex(unErrCode, NULL);
-                DEBUG_MSG("E:check frame error!\r\n");
+                //put_hex(unErrCode, NULL);
+                DEBUG_MSG("E:check frame error! errcode=0x%04x\r\n", unErrCode);
                 unErrCode = 0;
             }
         } /*!< end while((*punRecBufWriteIndex) != (*punRecBufReadIndex))... */

@@ -166,7 +166,7 @@ int can_read(struct can_frame *pstCanFrame)
         return -1;
     }
     /* ¥Ú”°CAN÷° */
-    print_frame(pstCanFrame);
+    //print_frame(pstCanFrame);
 
     return 0;
 }

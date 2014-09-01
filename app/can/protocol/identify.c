@@ -18,6 +18,7 @@
 /******************************************************************************/
 /*                             头文件                                         */
 /******************************************************************************/
+#include <stdio.h>
 #include "deftype.h"
 #include "protocol.h"
 #include "debug.h"
@@ -103,13 +104,14 @@ int32 identify_protocol_frame(uint8 ucNum, const uint8 *pucFrameBuf, \
 {
     int32 lRet = EXIT_FAILURE;
     uint8 ucIndentifyCode = 0;
+    int32 i = 0;
     
     do
     {
         /*! 输入参数检查 */
         if(INVALID_POINTER(pucFrameBuf) || INVALID_POINTER(pstReturnBuf))
         {
-            debug_msg("E:input param error!", __FILE__, __LINE__);
+            DEBUG_MSG("E:input param error!\r\n");
             break;
         }
         /*! 获取识别码 */
@@ -129,6 +131,12 @@ int32 identify_protocol_frame(uint8 ucNum, const uint8 *pucFrameBuf, \
         {
             /*! 命令 */
             case CONTROL_CODE_IDENT_CMD:
+            /*! 时序包包头 */
+            case CONTROL_CODE_IDENT_TS_HEAD:
+            /*! 时序包包体 */
+            case CONTROL_CODE_IDENT_TS_BODY:
+            /*! 时序包包尾 */
+            case CONTROL_CODE_IDENT_TS_TAIL:
                 //if(EXIT_SUCCESS == send_protocol_ack(EXIT_SUCCESS, pstReturnBuf))
                 //{
                 //    /*! 解释命令帧 */
@@ -136,12 +144,18 @@ int32 identify_protocol_frame(uint8 ucNum, const uint8 *pucFrameBuf, \
                 //}
 
                 /* 打印返回数据 */
-                //todo...
+                DEBUG_MSG("D:board type=%d, data= ", ucNum);
+                for(i=0; i<(pucFrameBuf[FRAME_DATALEN_INDEX]+5); i++)
+                {
+                    printf("0x%02x ", pucFrameBuf[i]);
+                }
+                printf("\r\n");
+                
                 break;
 
             /*! 其他值错误 */
             default:
-                debug_msg("E:what's this?", __FILE__, __LINE__);
+                DEBUG_MSG("E:what's this?\r\n");
                 break;
         }
     }while(0);
