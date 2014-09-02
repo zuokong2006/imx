@@ -197,6 +197,10 @@ void *can_rec_thread(void *arg)
             continue;
         }
         
+        /* 判断链表中是否有等待的对象 */
+        /* 线程锁 */
+        /* 有，释放信号量 */
+        
     } /* end of while(1)... */
 }
 

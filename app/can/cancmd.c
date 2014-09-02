@@ -201,6 +201,7 @@ int main(int argc, char *argv[])
     char acCmd[340] = {0};
     pthread_t thread_pid = 0;
     
+    
     /* 打开CAN设备 */
     if(0 > can_open())
     {
@@ -213,6 +214,8 @@ int main(int argc, char *argv[])
         return -1;
     }
     DEBUG_MSG("D:thread_create is ok!\r\n");
+    /* 信号量创建(超时时间) */
+    /* 链表创建 */
    
     while(1)
     {
@@ -229,7 +232,6 @@ int main(int argc, char *argv[])
         /* 输入命令字符串 */
         setbuf(stdin, NULL);
         printf("Please input cmd: ");
-        //gets(acCmdBuf);
         for(i=0; i<1023; i++)
         {
             acCmdBuf[i] = getchar();
@@ -240,26 +242,30 @@ int main(int argc, char *argv[])
             }
         }
         acCmdBuf[i+1] = '\0';
+#if 0
         printf("%s\r\n", acCmdBuf);
-        
+#endif
         /* 输入字符串转换 */
         lCmdLen = cmd_string_convert(acCmd, acCmdBuf);
         if(0 >= lCmdLen)
         {
             continue;
         }
+#if 0
         printf("cmd: ", acCmdBuf);
         for(i=0; i<lCmdLen; i++)
         {
             printf("0x%02x ", acCmd[i]);
         }
         printf("\r\n");
-        
+#endif
         /* cmd格式检查 */
         //todo...
         
         /* can发送数据 */
         send_data_to_can(lBoardType, acCmd, lCmdLen);
+        /* 等待返回 */
+        
     }
 }
 
