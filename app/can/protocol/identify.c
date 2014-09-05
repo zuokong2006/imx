@@ -131,26 +131,45 @@ int32 identify_protocol_frame(uint8 ucNum, const uint8 *pucFrameBuf, \
         {
             /*! 命令 */
             case CONTROL_CODE_IDENT_CMD:
-            /*! 时序包包头 */
-            case CONTROL_CODE_IDENT_TS_HEAD:
-            /*! 时序包包体 */
-            case CONTROL_CODE_IDENT_TS_BODY:
-            /*! 时序包包尾 */
-            case CONTROL_CODE_IDENT_TS_TAIL:
                 //if(EXIT_SUCCESS == send_protocol_ack(EXIT_SUCCESS, pstReturnBuf))
                 //{
                 //    /*! 解释命令帧 */
                 //    lRet = explain_cmd_frame(pucFrameBuf, pstReturnBuf);
                 //}
-
-                /* 打印返回数据 */
-                DEBUG_MSG("D:board type=%d, data= ", ucNum);
+                DEBUG_MSG("D:board type=%d, cmd data= ", ucNum);
                 for(i=0; i<(pucFrameBuf[FRAME_DATALEN_INDEX]+5); i++)
                 {
                     printf("0x%02x ", pucFrameBuf[i]);
                 }
                 printf("\r\n");
+                break;
                 
+            /*! 时序包包头 */
+            case CONTROL_CODE_IDENT_TS_HEAD:
+                DEBUG_MSG("D:board type=%d, tsh data= ", ucNum);
+                for(i=0; i<(pucFrameBuf[FRAME_DATALEN_INDEX]+5); i++)
+                {
+                    printf("0x%02x ", pucFrameBuf[i]);
+                }
+                printf("\r\n");
+                break;
+            /*! 时序包包体 */
+            case CONTROL_CODE_IDENT_TS_BODY:
+                DEBUG_MSG("D:board type=%d, tsb data= ", ucNum);
+                for(i=0; i<(pucFrameBuf[FRAME_DATALEN_INDEX]+5); i++)
+                {
+                    printf("0x%02x ", pucFrameBuf[i]);
+                }
+                printf("\r\n");
+                break;
+            /*! 时序包包尾 */
+            case CONTROL_CODE_IDENT_TS_TAIL:
+                DEBUG_MSG("D:board type=%d, tst data= ", ucNum);
+                for(i=0; i<(pucFrameBuf[FRAME_DATALEN_INDEX]+5); i++)
+                {
+                    printf("0x%02x ", pucFrameBuf[i]);
+                }
+                printf("\r\n");
                 break;
 
             /*! 其他值错误 */

@@ -368,6 +368,7 @@ int32 check_protocol_frame(uint8 ucNum, frame_check_t *pstFrame)
             {
                 /*! 起始码 */
                 case FRAME_CHECK_START:
+                    pstFrame->stReturnBuf.ucFlag = 0;
                     check_frame_start(pstFrame, ucRecData, &unErrCode);
                     break;
                 /*! 控制码 */
@@ -394,6 +395,7 @@ int32 check_protocol_frame(uint8 ucNum, frame_check_t *pstFrame)
                         //LED_STATE = ~LED_STATE;
                         /*! 识别协议帧 */
                         lRet = identify_protocol_frame(ucNum, pstFrame->aucFrameBuf, &(pstFrame->stReturnBuf));
+                        pstFrame->stReturnBuf.ucFlag = 1;
                     }
                     break;
                 
@@ -402,6 +404,7 @@ int32 check_protocol_frame(uint8 ucNum, frame_check_t *pstFrame)
                     if(EXIT_SUCCESS == self_check_frame(pstFrame, ucRecData))
                     {
                         DEBUG_MSG("D:self-check ok!\r\n");
+                        pstFrame->stReturnBuf.ucFlag = 0;
                     }
                     break;
                 /*! 其他值 */

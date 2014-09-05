@@ -154,6 +154,9 @@ void *can_rec_thread(void *arg)
     uint8 ucSrcId = 0, ucDestId = 0;
     frame_check_t astFrameBuf[REC_BUF_NUM] = { 0 };
     struct seg_msg_buf astSegMsgBuf[REC_BUF_NUM] = { 0 };
+    uint8 ucControlCode = 0, ucCmdType = 0, ucCmdNum = 0, ucCmdContent = 0;
+    
+    struct protocol_list *pstHead = (struct protocol_list *)arg;
 
     while(1)
     {
@@ -195,6 +198,25 @@ void *can_rec_thread(void *arg)
         {
             DEBUG_MSG("E:Protocol process error!\r\n");
             continue;
+        }
+        else
+        {
+            if(0 == astFrameBuf[ucSrcId].stReturnBuf.ucFlag)
+            {
+                continue;
+            }
+            astFrameBuf[ucSrcId].stReturnBuf.ucFlag = 0;
+            ucControlCode = astFrameBuf[ucSrcId].aucFrameBuf[FRAME_CONTROL_INDEX];
+            if((FRAME_CONTROL_CODE_REP != ucControlCode) \
+                && (FRAME_CONTROL_CODE_EVT != ucControlCode))
+            {
+                continue;
+            }
+            ucCmdType = astFrameBuf[ucSrcId].aucFrameBuf[FRAME_COMMAND_TYPE_INDEX];
+            ucCmdNum = astFrameBuf[ucSrcId].aucFrameBuf[FRAME_COMMAND_NUM_INDEX];
+            ucCmdContent = astFrameBuf[ucSrcId].aucFrameBuf[FRAME_COMMAND_CONTENT_INDEX];
+            plist_match(ucCmdType, ucCmdNum, ucCmdContent, NULL, 0, pstHead);
+            
         }
         
         /* 判断链表中是否有等待的对象 */

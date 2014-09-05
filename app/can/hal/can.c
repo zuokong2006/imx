@@ -216,3 +216,95 @@ int can_write_test(uint8 ucBoardType)
     stCanFrame.data[7] = 0x55;
     return can_write(&stCanFrame);
 }
+
+/* 发送数据到CAN */
+int send_data_to_can(int lBoardType, char *pcCmd, int lCmdLen)
+{
+    struct can_frame stCanFrame;
+    int i = 0;
+    uint8 ucCnt = 0;
+    uint16 unTemp = 0;
+    
+    if(INVALID_POINTER(pcCmd) || (1 > lCmdLen) || (1 > lBoardType))
+    {
+        DEBUG_MSG("E:input param error!\r\n");
+        return -1;
+    }
+    /*! 计算数据需要几个报文帧 */
+    unTemp = lCmdLen / 8;
+    if(0x0000 != (lCmdLen & 0x0007))
+    {
+        unTemp = unTemp + 1;
+    }
+    /*! 数据不大于8字节，无需分段 */
+    if(1 == unTemp)
+    {
+        stCanFrame.can_id = 0x80000000 | (lBoardType << 16) |FRAME_NONE_SEG;
+        stCanFrame.can_dlc = lCmdLen;
+        for(i = 0; i < lCmdLen; i++)
+        {
+            stCanFrame.data[i] = pcCmd[i];
+        }
+        if(0 > can_write(&stCanFrame))
+        {
+            return -1;
+        }
+    }
+    else
+    {
+        /*! 第一个分段报文 */
+        stCanFrame.can_id = 0x80000000 | (lBoardType << 16) | FRAME_FIRST_SEG;
+        stCanFrame.can_dlc = 8;
+        for(i = 0; i<8; i++)
+        {
+            stCanFrame.data[i] = *pcCmd;
+            pcCmd++;
+        }
+        if(0 > can_write(&stCanFrame))
+        {
+            return -1;
+        }
+        unTemp--;
+        ucCnt = 1;
+        /*! 中间分段报文 */
+        while(1 != unTemp)
+        {
+            stCanFrame.can_id = 0x80000000 | (lBoardType << 16) | FRAME_MIDDLE_SEG | (ucCnt << 8);
+            stCanFrame.can_dlc = 8;
+            for(i = 0; i<8; i++)
+            {
+                stCanFrame.data[i] = *pcCmd;
+                pcCmd++;
+            }
+            if(0 > can_write(&stCanFrame))
+            {
+                return -1;
+            }
+            unTemp--;
+            ucCnt++;
+        }
+        /*! 最后分段报文 */
+        if(0x0000 == (lCmdLen & 0x0007))
+        {
+            unTemp = 8;
+        }
+        else
+        {
+            unTemp = lCmdLen & 0x0007;
+        }
+        ucCnt = 0;
+        stCanFrame.can_id = 0x80000000 | (lBoardType << 16) | FRAME_END_SEG | (ucCnt << 8);
+        stCanFrame.can_dlc = unTemp;
+        for(i = 0; i<unTemp; i++)
+        {
+            stCanFrame.data[i] = *pcCmd;
+            pcCmd++;
+        }
+        if(0 > can_write(&stCanFrame))
+        {
+            return -1;
+        }
+    }
+
+    return 0;
+}

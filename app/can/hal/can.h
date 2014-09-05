@@ -29,5 +29,6 @@ int can_close(void);
 int can_read(struct can_frame *pstCanFrame);
 int can_write(struct can_frame *pstCanFrame);
 int can_write_test(uint8 ucBoardType);
+int send_data_to_can(int lBoardType, char *pcCmd, int lCmdLen);
 
 #endif
