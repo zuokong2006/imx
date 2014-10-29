@@ -5,9 +5,6 @@
 */
 #include <stdio.h>
 #include <sys/ioctl.h>
-#include <arpa/inet.h>
-#include <net/if.h>
-#include <linux/socket.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -15,167 +12,158 @@
 #include <errno.h>
 #include <time.h>
 #include <string.h>
-#include <pthread.h>
-#include <semaphore.h>
 #include "deftype.h"
 #include "debug.h"
 #include "bmplib.h"
 
-int GenBmpFile(U8 *pData, U8 bitCountPerPix, U32 width, U32 height, const char *filename)  
-{  
-    FILE *fp = fopen(filename, "wb");  
-    if(!fp)  
-    {  
-        printf("fopen failed : %s, %d\n", __FILE__, __LINE__);  
-        return 0;  
-    }  
-  
-    U32 bmppitch = ((width*bitCountPerPix + 31) >> 5) << 2;  
-    U32 filesize = bmppitch*height;  
-  
-    BITMAPFILE bmpfile;  
-  
-    bmpfile.bfHeader.bfType = 0x4D42;  
-    bmpfile.bfHeader.bfSize = filesize + sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);  
-    bmpfile.bfHeader.bfReserved1 = 0;  
-    bmpfile.bfHeader.bfReserved2 = 0;  
-    bmpfile.bfHeader.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);  
-  
-    bmpfile.biInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);  
-    bmpfile.biInfo.bmiHeader.biWidth = width;  
-    bmpfile.biInfo.bmiHeader.biHeight = height;  
-    bmpfile.biInfo.bmiHeader.biPlanes = 1;  
-    bmpfile.biInfo.bmiHeader.biBitCount = bitCountPerPix;  
-    bmpfile.biInfo.bmiHeader.biCompression = 0;  
-    bmpfile.biInfo.bmiHeader.biSizeImage = 0;  
-    bmpfile.biInfo.bmiHeader.biXPelsPerMeter = 0;  
-    bmpfile.biInfo.bmiHeader.biYPelsPerMeter = 0;  
-    bmpfile.biInfo.bmiHeader.biClrUsed = 0;  
-    bmpfile.biInfo.bmiHeader.biClrImportant = 0;  
-  
-    fwrite(&(bmpfile.bfHeader), sizeof(BITMAPFILEHEADER), 1, fp);  
-    fwrite(&(bmpfile.biInfo.bmiHeader), sizeof(BITMAPINFOHEADER), 1, fp);  
-  
-    U8 *pEachLinBuf = (U8*)malloc(bmppitch);  
-    memset(pEachLinBuf, 0, bmppitch);  
-    U8 BytePerPix = bitCountPerPix >> 3;  
-    U32 pitch = width * BytePerPix;  
-    if(pEachLinBuf)  
-    {  
-        int h,w;  
-        for(h = height-1; h >= 0; h--)  
-        {  
-            for(w = 0; w < width; w++)  
-            {  
-                //copy by a pixel  
-                pEachLinBuf[w*BytePerPix+0] = pData[h*pitch + w*BytePerPix + 0];  
-                pEachLinBuf[w*BytePerPix+1] = pData[h*pitch + w*BytePerPix + 1];  
-                pEachLinBuf[w*BytePerPix+2] = pData[h*pitch + w*BytePerPix + 2];  
-            }  
-            fwrite(pEachLinBuf, bmppitch, 1, fp);  
-              
-        }  
-        free(pEachLinBuf);  
-    }  
-  
-    fclose(fp);  
-  
-    return 1;  
-}  
-  
-//获取BMP文件的位图数据(无颜色表的位图):丢掉BMP文件的文件信息头和位图信息头，获取其RGB(A)位图数据  
-U8* GetBmpData(U8 *bitCountPerPix, U32 *width, U32 *height, const char* filename)  
-{  
-    FILE *pf = fopen(filename, "rb");  
-    if(!pf)  
-    {  
-        printf("fopen failed : %s, %d\n", __FILE__, __LINE__);  
-        return NULL;  
-    }  
-  
-    BITMAPFILE bmpfile;
-    fread(&(bmpfile.bfHeader.bfType), sizeof(bmpfile.bfHeader.bfType), 1, pf);
-    fread(&(bmpfile.bfHeader.bfSize), sizeof(bmpfile.bfHeader.bfSize), 1, pf);
-    fread(&(bmpfile.bfHeader.bfReserved1), sizeof(bmpfile.bfHeader.bfReserved1), 1, pf);
-    fread(&(bmpfile.bfHeader.bfReserved2), sizeof(bmpfile.bfHeader.bfReserved2), 1, pf);
-    fread(&(bmpfile.bfHeader.bfOffBits), sizeof(bmpfile.bfHeader.bfOffBits), 1, pf);
-    //if(0 > fread(&(bmpfile.bfHeader), sizeof(bmpfile.bfHeader), 1, pf))
-    //{
-    //    ERROR_MSG("E:fread bfheader error!\r\n");
-    //}    
-    printf("file header: type=0x%04x, size=%d, offbits=%d\r\n", \
-           bmpfile.bfHeader.bfType, \
-           bmpfile.bfHeader.bfSize, \
-           bmpfile.bfHeader.bfOffBits);
-     
-    if(0 > fread(&(bmpfile.biInfo.bmiHeader), sizeof(bmpfile.biInfo.bmiHeader), 1, pf))
+
+typedef unsigned char  U8;
+typedef unsigned short U16;
+typedef unsigned int   U32;
+
+/* BMP文件头结构体定义 */
+typedef struct tagBITMAPFILEHEADER
+{
+    U16 bfType; /* 类型(2 bytes)BM */
+    U32 bfSize; /* 文件大小(4 bytes) */
+    U16 bfReserved1; /* 保留 */
+    U16 bfReserved2; /* 保留 */
+    U32 bfOffBits; /* 文件头到图像数据的偏移值 */
+} BITMAPFILEHEADER;
+
+/* BMP文件信息头结构体定义 */
+typedef struct tagBITMAPINFOHEADER
+{
+    U32 biSize; /* 此结构占用的字节数(4 bytes) */
+    U32 biWidth; /* 图像宽度 */
+    U32 biHeight; /* 图像高度 */
+    U16 biPlanes; /* 颜色平面数，始终为1 */
+    U16 biBitCount; /* 比特数/像素：1、4、8、16、24、32 */
+    U32 biCompression; /* 压缩类型 */
+    U32 biSizeImage; /* 图像大小 */
+    U32 biXPelsPerMeter; /* 水平分辨率 */
+    U32 biYPelsPerMeter; /* 垂直分辨率 */
+    U32 biClrUsed; /* 颜色索引数 */
+    U32 biClrImportant; /* 对图像显示有重要影响的颜色索引的数目 */
+} BITMAPINFOHEADER;
+
+/* 调色板结构体定义 */
+typedef struct tagRGBQUAD
+{
+    U8 rgbBlue;
+    U8 rgbGreen;
+    U8 rgbRed;
+    U8 rgbReserved;
+} RGBQUAD;
+
+
+/* 打印bmp文件头信息 */
+static void print_bmp_file_header(BITMAPFILEHEADER *pstBmpFileHeader)
+{
+    /* 输入参数检查 */
+    if(INVALID_POINTER(pstBmpFileHeader))
+    {
+        DEBUG_MSG("E:input param error.\r\n");
+        return;
+    }
+    DEBUG_MSG("D:bmp file header > type=0x%04x, size=%d, offbits=%d\r\n", \
+              pstBmpFileHeader->bfType, \
+              pstBmpFileHeader->bfSize, \
+              pstBmpFileHeader->bfOffBits);
+}
+
+/* 打印位图信息头 */
+static void print_bmp_info_header(BITMAPINFOHEADER *pstBmpInfoHeader)
+{
+    /* 输入参数检查 */
+    if(INVALID_POINTER(pstBmpInfoHeader))
+    {
+        DEBUG_MSG("E:input param error.\r\n");
+        return;
+    }
+    DEBUG_MSG("D:bmp info header > size=%d, width=%d, height=%d, bitcount=%d, \
+biCompression=%d, biSizeImage=%d, biXPelsPerMeter=%d, biYPelsPerMeter=%d, \
+biClrUsed=%d, biClrImportant=%d\r\n", \
+           pstBmpInfoHeader->biSize, \
+           pstBmpInfoHeader->biWidth, \
+           pstBmpInfoHeader->biHeight, \
+           pstBmpInfoHeader->biBitCount, \
+           pstBmpInfoHeader->biCompression, \
+           pstBmpInfoHeader->biSizeImage, \
+           pstBmpInfoHeader->biXPelsPerMeter, \
+           pstBmpInfoHeader->biYPelsPerMeter, \
+           pstBmpInfoHeader->biClrUsed, \
+           pstBmpInfoHeader->biClrImportant);
+}
+
+
+/* 获取BMP文件的位图数据(打开1bit/像素) */
+int get_bmp_data(bmp_t *pstBmp, const char *pcFileName)
+{
+    FILE *fp;
+    BITMAPFILEHEADER stBmpFileHeader;
+    BITMAPINFOHEADER stBmpInfoHeader;
+    
+    /* 输入参数检查 */
+    if(INVALID_POINTER(pstBmp) || INVALID_POINTER(pcFileName))
+    {
+        DEBUG_MSG("E:input param error.\r\n");
+        return -1;
+    }
+    
+    /* 打开bmp文件 */
+    if((fp = fopen(pcFileName, "rb")) == NULL)
+    {
+        DEBUG_MSG("E:Error opening file %s.\r\n", pcFileName);
+        return -1;
+    }
+    /* 读BMP文件头信息(分开读取) */
+    fread(&(stBmpFileHeader.bfType), sizeof(stBmpFileHeader.bfType), 1, fp);
+    fread(&(stBmpFileHeader.bfSize), sizeof(stBmpFileHeader.bfSize), 1, fp);
+    fread(&(stBmpFileHeader.bfReserved1), sizeof(stBmpFileHeader.bfReserved1), 1, fp);
+    fread(&(stBmpFileHeader.bfReserved2), sizeof(stBmpFileHeader.bfReserved2), 1, fp);
+    fread(&(stBmpFileHeader.bfOffBits), sizeof(stBmpFileHeader.bfOffBits), 1, fp);
+    /* 打印文件头信息 */
+    print_bmp_file_header(&stBmpFileHeader);
+    if(0x4d42 != stBmpFileHeader.bfType)
+    {
+        DEBUG_MSG("E:is not bmp file.\r\n");
+        return -1;
+    }
+    /* 读位图信息 */
+    if(0 > fread(&stBmpInfoHeader, sizeof(stBmpInfoHeader), 1, fp))
     {
         ERROR_MSG("E:fread bmiHeader error!\r\n");
     }
-    printf("bmp info header: size=%d, width=%d, height=%d, bitcount=%d, biCompression=%d, biSizeImage=%d, biXPelsPerMeter=%d, biYPelsPerMeter=%d, biClrUsed=%d, biClrImportant=%d\r\n", \
-           bmpfile.biInfo.bmiHeader.biSize, \
-           bmpfile.biInfo.bmiHeader.biWidth, \
-           bmpfile.biInfo.bmiHeader.biHeight, \
-           bmpfile.biInfo.bmiHeader.biBitCount, \
-           bmpfile.biInfo.bmiHeader.biCompression, \
-           bmpfile.biInfo.bmiHeader.biSizeImage, \
-           bmpfile.biInfo.bmiHeader.biXPelsPerMeter, \
-           bmpfile.biInfo.bmiHeader.biYPelsPerMeter, \
-           bmpfile.biInfo.bmiHeader.biClrUsed, \
-           bmpfile.biInfo.bmiHeader.biClrImportant);
+    /* 打印位图信息头 */
+    print_bmp_info_header(&stBmpInfoHeader);
+    
+    /* 保存信息 */
+    pstBmp->usBitCount = stBmpInfoHeader.biBitCount;  
+    pstBmp->ulWidth = stBmpInfoHeader.biWidth;
+    pstBmp->ulHeight = stBmpInfoHeader.biHeight;
+    pstBmp->ulRowBytes = (((pstBmp->ulWidth)*(pstBmp->usBitCount) + 31) >> 5) << 2;
+    pstBmp->pucData = (unsigned char *)malloc((pstBmp->ulHeight)*(pstBmp->ulRowBytes));  
+    if(NULL == pstBmp->pucData)  
+    {
+        DEBUG_MSG("E:malloc error.\r\n");
+        return -1;
+    }
+    fseek(fp, stBmpFileHeader.bfOffBits, SEEK_SET);
+    fread(pstBmp->pucData, (pstBmp->ulHeight)*(pstBmp->ulRowBytes), 1, fp); 
+    /* 关闭文件 */
+    fclose(fp);  
        
-    *bitCountPerPix = bmpfile.biInfo.bmiHeader.biBitCount;  
-    if(width)  
-    {  
-        *width = bmpfile.biInfo.bmiHeader.biWidth;  
-    }  
-    if(height)  
-    {  
-        *height = bmpfile.biInfo.bmiHeader.biHeight;  
-    }  
-  
-    U32 bmppicth = (((*width)*(*bitCountPerPix) + 31) >> 5) << 2;
-    printf("bmppicth=%d\r\n", bmppicth);
-    U8 *pdata = (U8*)malloc((*height)*bmppicth);  
-       
-    U8 *pEachLinBuf = (U8*)malloc(bmppicth);  
-    memset(pEachLinBuf, 0, bmppicth);  
-    U8 BytePerPix = (*bitCountPerPix) >> 3;  
-    U32 pitch = (*width) * BytePerPix;  
-  
-    if(pdata && pEachLinBuf)  
-    {  
-#if 0
-        int w, h;  
-        for(h = (*height) - 1; h >= 0; h--)  
-        {  
-            fread(pEachLinBuf, bmppicth, 1, pf);  
-            for(w = 0; w < (*width); w++)  
-            {  
-                pdata[h*pitch + w*BytePerPix + 0] = pEachLinBuf[w*BytePerPix+0];  
-                pdata[h*pitch + w*BytePerPix + 1] = pEachLinBuf[w*BytePerPix+1];  
-                pdata[h*pitch + w*BytePerPix + 2] = pEachLinBuf[w*BytePerPix+2];  
-            }  
-        }  
-#endif
-        fseek(pf, bmpfile.bfHeader.bfOffBits, SEEK_SET);
-        fread(pdata, (*height)*bmppicth, 1, pf); 
-        
-        free(pEachLinBuf);  
-    }  
-    fclose(pf);  
-       
-    return pdata;  
-}  
-  
-//释放GetBmpData分配的空间  
-void FreeBmpData(U8 *pdata)  
+    return 0;
+}
+
+/* 释放GetBmpData分配的空间 */
+void free_bmp_data(unsigned char *pucData)
 {  
-    if(pdata)  
+    if(pucData)
     {  
-        free(pdata);  
-        pdata = NULL;  
-    }  
-}  
-  
+        free(pucData);
+        pucData = NULL;
+    }
+}
 

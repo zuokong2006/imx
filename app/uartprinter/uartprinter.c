@@ -24,7 +24,7 @@
 
 
 /* 串口波特率定义 */
-#define BAUDRATE        B9600
+#define BAUDRATE        B57600
 
 
 /* 打开串口 */
@@ -73,32 +73,22 @@ static int open_uart(char *pcSerialName)
     return iFd;
 }
 
-typedef struct _LI_RGB  
-{  
-    U8 b;  
-    U8 g;  
-    U8 r;  
-}LI_RGB; 
-
-#define WIDTH   10 
-#define HEIGHT  10 
-
 /* 
  * 主函数 
- * 用法：uartprinter + 串口设备名"/dev/ttySP0"
+ * 用法：uartprinter + 串口设备名"/dev/ttySP0 + bmp文件名"
  */
 int main(int argc, char *argv[])
 {
     int uartfd;
-    char tmp[32];
+    unsigned char ucPrinterState = 0;
     
     /* 输入参数检查 */
-    if(2 != argc)
+    if(3 != argc)
     {
         DEBUG_MSG("E:input param error.\r\n");
         return -1;
     }
-    //DEBUG_MSG("D:dev name = %s!\r\n", argv[1]);
+    
     /* 打开串口 */
     uartfd = open_uart(argv[1]);
     if(0 > uartfd)
@@ -109,22 +99,20 @@ int main(int argc, char *argv[])
     
     /* 设置串口打印机 */
     printer_fildes(uartfd);
+    printer_init();
+    get_printer_state(&ucPrinterState);
+    /* 图片打印 */
     printer_set_linespacing(0);
-    
-    tmp[0] = 0x1b;
-    tmp[1] = 0x4a;
-    tmp[2] = 20;
-    write(uartfd, tmp, 3);
-    printer_bmp_print("in2.bmp");
-    tmp[2] = 60;
-    write(uartfd, tmp, 3);
-    
-    DEBUG_MSG("D:enter main loop.\r\n");
+    printer_paper_feed(20);
+    printer_bmp_print(argv[2]);
+    printer_paper_feed(50);
     
     /* 主循环 */
+    DEBUG_MSG("D:enter main loop.\r\n");
     while(1)
     {
-        
+        sleep(1);
+        get_printer_state(&ucPrinterState);
     } /* end of while(1)... */
 }
 
