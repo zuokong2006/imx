@@ -1,0 +1,23 @@
+
+i、在Linux环境中运行make-arm.sh脚本生成libthermalprinter.so。
+
+ii、libthermalprinter.so的使用
+    使用热敏打印机类并编译时，需指明.so和thermalprinterlib.h路径；
+    运行时需要将.so放入库路径指明的路劲中。
+
+iii、class thermalprinter
+    1、定义并打开热敏打印机所需的串口
+        thermalprinter cPrinter;
+        if(0 > cPrinter.open_dev("/dev/ttySP0"))
+        {
+            printf("D:open thermalprinter error!\r\n");
+            return -1;
+        }
+    2、初始化热敏打印机，并获取打印机状态
+        cPrinter.init();
+        cPrinter.get_state(&ucPrinterState);
+    3、1位BMP文件的打印
+        cPrinter.paper_feed(20); //根据实际打印图形前走纸
+        cPrinter.print_1bit_bmp("/temp/11.bmp"); //打印位图，最好将生成的BMP文件放在/temp目录下
+        cPrinter.paper_feed(50); //打印结束后，根据实际需要走纸
+ 

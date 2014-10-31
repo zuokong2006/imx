@@ -20,7 +20,6 @@
 #include "deftype.h"
 #include "debug.h"
 #include "printerlib.h"
-#include "bmplib.h"
 
 
 /* 串口波特率定义 */
