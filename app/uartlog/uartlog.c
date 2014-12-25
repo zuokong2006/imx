@@ -164,7 +164,7 @@ void sigalrm_fn(int sig)
 {
     if(0 < lWrIndex)
     {
-        write_uartlog_file(acFileName, acBuf, lWrIndex);
+        //write_uartlog_file(acFileName, acBuf, lWrIndex);
         lWrIndex = 0;
     }
 }
@@ -194,12 +194,12 @@ int main(int argc, char *argv[])
         return -1;
     }
     /* 创建log文件 */
-    if(0 > create_uartlog_file(acFileName))
-    {
-        DEBUG_MSG("D:create log file error!\r\n");
-        close(uartfd);
-        return -1;
-    }
+    //if(0 > create_uartlog_file(acFileName))
+    //{
+    //    DEBUG_MSG("D:create log file error!\r\n");
+    //    close(uartfd);
+    //    return -1;
+    //}
     /* 信号 */
     signal(SIGALRM, sigalrm_fn);
     
@@ -209,14 +209,14 @@ int main(int argc, char *argv[])
         len = read(uartfd, tmp, 16);
         for(i=0; i<len; i++)
         {
-            alarm(5);
+            //alarm(5);
             printf("%c", tmp[i]);
             acBuf[lWrIndex] = tmp[i];
             lWrIndex++;
             if(BUF_SIZE <= lWrIndex)
             {
                 lWrIndex = 0;
-                write_uartlog_file(acFileName, acBuf, BUF_SIZE);
+                //write_uartlog_file(acFileName, acBuf, BUF_SIZE);
             }
         }
     } /* end of while(1)... */
