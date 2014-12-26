@@ -90,7 +90,7 @@ bool SerialTrans :: openSerial()
         goto openerr;
     }
     tcgetattr(fd, &setting); 
-    //  è®¾ç½®æ³¢ç‰¹ç‡
+    //  ÉèÖÃ²¨ÌØÂÊ
     speed_t speed;
     if (setData.baudRate == "B4800") {
         speed = B4800; 
@@ -115,7 +115,7 @@ bool SerialTrans :: openSerial()
     cfsetispeed(&setting, speed);
     cfsetospeed(&setting, speed);
     cfmakeraw(&setting);
-    //  è®¾ç½®æ•°æ®ä½ 
+    //  ÉèÖÃÊı¾İÎ» 
     if (setData.dataBit == "8") {
         setting .c_cflag |= CS8;
     } else if (setData.dataBit == "7") {
@@ -128,7 +128,7 @@ bool SerialTrans :: openSerial()
         QMessageBox::warning(this, "error", "dataBit error!");  
         goto seterr;
     }
-    //  è®¾ç½®parity
+    //  ÉèÖÃparity
     if (setData.parity == "none") {
         setting.c_cflag &= ~PARENB;
         setting.c_iflag &= ~INPCK;
@@ -143,7 +143,7 @@ bool SerialTrans :: openSerial()
         QMessageBox::warning(this, "error", "dataBit error!");  
         goto seterr;
     }
-    //  è®¾ç½®åœæ­¢ä½
+    //  ÉèÖÃÍ£Ö¹Î»
     if (setData.stopBit == "1") {
         setting.c_cflag &= ~CSTOPB; 
     } else if (setData.stopBit == "2") {
