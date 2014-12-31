@@ -8,7 +8,7 @@ then
     rm hello
 fi
 
-cmake -D TARGET_P=arm ./
+cmake TARGET_P=arm ../
 
 make
 
