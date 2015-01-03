@@ -15,7 +15,7 @@ GoToCellDialog::GoToCellDialog(QWidget *parent)
     connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
 }
 
-/* setupUi()自动connect on_objectName_signalName() */
+/* setupUi()自动创建connect on_objectName_signalName() */
 void GoToCellDialog::on_lineEdit_textChanged()
 {
     okButton->setEnabled(lineEdit->hasAcceptableInput());
