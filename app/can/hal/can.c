@@ -114,16 +114,18 @@ int can_open(void)
         ERROR_MSG("E:bind failed!\r\n");
         return -1;
     }
-    /* 过滤器设置 */
-    struct can_filter filter[4];
-    filter[0].can_id = 0x00400000 | CAN_EFF_FLAG;
-    filter[0].can_mask = 0x00400000;
-    filter[1].can_id = 0x00800000 | CAN_EFF_FLAG;
-    filter[1].can_mask = 0x00800000;
-    filter[2].can_id = 0x00c00000 | CAN_EFF_FLAG;
-    filter[2].can_mask = 0x00c00000;
-    filter[3].can_id = 0x00010000 | CAN_EFF_FLAG;
-    filter[3].can_mask = 0x00010000;
+    /* CAN过滤器设置 
+     * kernel\Documentation\networking\can.txt
+     * <received_can_id> & mask == can_id & mask */
+    struct can_filter filter[3];
+    filter[0].can_id = (1<<22) | (15<<16) | CAN_EFF_FLAG;
+    filter[0].can_mask = (1<<22) | (15<<16);
+    filter[1].can_id = (2<<22) | (15<<16) | CAN_EFF_FLAG;
+    filter[1].can_mask = (2<<22) | (15<<16);
+    filter[2].can_id = (3<<22) | (15<<16) | CAN_EFF_FLAG;
+    filter[2].can_mask = (3<<22) | (15<<16);
+    //filter[3].can_id = 0x00010000 | CAN_EFF_FLAG;
+    //filter[3].can_mask = 0x00010000;
     ret = setsockopt(canfd, SOL_CAN_RAW, CAN_RAW_FILTER, &filter, sizeof(filter));
     /* 禁用接收过滤规则 */
     //ret = setsockopt(canfd, SOL_CAN_RAW, CAN_RAW_FILTER, NULL, 0);
@@ -166,7 +168,7 @@ int can_read(struct can_frame *pstCanFrame)
         return -1;
     }
     /* 打印CAN帧 */
-    //print_frame(pstCanFrame);
+    print_frame(pstCanFrame);
 
     return 0;
 }
@@ -239,7 +241,7 @@ int send_data_to_can(int lBoardType, char *pcCmd, int lCmdLen)
     /*! 数据不大于8字节，无需分段 */
     if(1 == unTemp)
     {
-        stCanFrame.can_id = 0x80000000 | (lBoardType << 16) |FRAME_NONE_SEG;
+        stCanFrame.can_id = 0x80000000 | (15 << 22) | (lBoardType << 16) |FRAME_NONE_SEG;
         stCanFrame.can_dlc = lCmdLen;
         for(i = 0; i < lCmdLen; i++)
         {
@@ -253,7 +255,7 @@ int send_data_to_can(int lBoardType, char *pcCmd, int lCmdLen)
     else
     {
         /*! 第一个分段报文 */
-        stCanFrame.can_id = 0x80000000 | (lBoardType << 16) | FRAME_FIRST_SEG;
+        stCanFrame.can_id = 0x80000000 | (15 << 22) | (lBoardType << 16) | FRAME_FIRST_SEG;
         stCanFrame.can_dlc = 8;
         for(i = 0; i<8; i++)
         {
@@ -269,7 +271,7 @@ int send_data_to_can(int lBoardType, char *pcCmd, int lCmdLen)
         /*! 中间分段报文 */
         while(1 != unTemp)
         {
-            stCanFrame.can_id = 0x80000000 | (lBoardType << 16) | FRAME_MIDDLE_SEG | (ucCnt << 8);
+            stCanFrame.can_id = 0x80000000 | (15 << 22) | (lBoardType << 16) | FRAME_MIDDLE_SEG | (ucCnt << 8);
             stCanFrame.can_dlc = 8;
             for(i = 0; i<8; i++)
             {
@@ -293,7 +295,7 @@ int send_data_to_can(int lBoardType, char *pcCmd, int lCmdLen)
             unTemp = lCmdLen & 0x0007;
         }
         ucCnt = 0;
-        stCanFrame.can_id = 0x80000000 | (lBoardType << 16) | FRAME_END_SEG | (ucCnt << 8);
+        stCanFrame.can_id = 0x80000000 | (15 << 22) | (lBoardType << 16) | FRAME_END_SEG | (ucCnt << 8);
         stCanFrame.can_dlc = unTemp;
         for(i = 0; i<unTemp; i++)
         {

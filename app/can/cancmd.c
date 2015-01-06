@@ -142,9 +142,9 @@ int main(int argc, char *argv[])
         printf("Please input board type: ");
         scanf("%d", &lBoardType);
         printf("board type = %d\r\n", lBoardType);
-        if((0 > lBoardType) || (3 < lBoardType))
+        if((0 > lBoardType) || (15 < lBoardType))
         {
-            DEBUG_MSG("E:input boardtype < 0 or boardtype >3!\r\n");
+            DEBUG_MSG("E:input boardtype < 0 or boardtype >15!\r\n");
             continue;
         }
         /* ÊäÈëÃüÁî×Ö·û´® */

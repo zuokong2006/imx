@@ -178,9 +178,9 @@ void *can_rec_thread(void *arg)
         ucSrcId = (uint8)((stCanFrame.can_id & SRC_ID_MASK) >> 22);
         ucDestId = (uint8)((stCanFrame.can_id & DEST_ID_MASK) >> 16);
         //ucSegNum = (uint8)((stCanFrame.can_id & SEG_CODE_NUM_MASK) >> 8);
-        if((3 < ucSrcId) || (3 < ucDestId))
+        if((15 < ucSrcId) || (15 < ucDestId))
         {
-            DEBUG_MSG("E:srcid > 3 or destid > 3! srcid=%d desti=%d\r\n", \
+            DEBUG_MSG("E:srcid > 15 or destid > 15! srcid=%d desti=%d\r\n", \
                       ucSrcId, ucDestId);
             continue;
         }
