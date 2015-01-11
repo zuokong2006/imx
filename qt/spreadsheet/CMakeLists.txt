@@ -1,10 +1,10 @@
 #dir: 
-#datte: 2015-01-01
+#datte: 2015-01-11
 #author: zuokongxiao
 #discription: qt cmake files
 
 #工程名称
-PROJECT(sort)
+PROJECT(spreadsheet)
 
 #CMAKE版本
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
@@ -31,27 +31,49 @@ endif(WIN32)
 MESSAGE(STATUS "compiler: ${CMAKE_CXX_COMPILER}, flags: ${CMAKE_C_FLAGS}")
 
 #执行文件名称
-set(EXEC_NAME sortdialog)
+set(EXEC_NAME spreadsheet)
 
 #头文件
 SET(HEADER_FILES 
+    finddialog.h
+    gotocelldialog.h
+    mainwindow.h
     sortdialog.h
+    cell.h
+    spreadsheet.h
     )
 
 #源文件
 SET(SOURCE_FILES 
     main.cpp
+    finddialog.cpp
+    gotocelldialog.cpp
+    mainwindow.cpp
     sortdialog.cpp
+    cell.cpp
+    spreadsheet.cpp
     )
 
 #moc文件Q_OBJECT
 set(MOC_FILES 
+    finddialog.h
+    gotocelldialog.h
+    mainwindow.h
     sortdialog.h
+    #cell.h
+    spreadsheet.h
     )
 
 #ui文件
 set(UI_FILES
     sortdialog.ui
+    gotocelldialog.ui
+    sortdialog.ui
+    )
+
+#qrc文件
+set(RESOURCES_FILES
+    spreadsheet.qrc
     )
 
 #向工程添加头文件搜索路径
@@ -67,11 +89,16 @@ qt4_wrap_ui(UI_OUTPUTS ${UI_FILES})
 QT4_WRAP_CPP(MOC_OUTPUTS ${MOC_FILES})
 #SOURCE_GROUP("moc_cxx" FILES ${MOC_OUTPUTS})
 
+#qrc
+qt4_add_resources(RCC_OUTPUTS ${RESOURCES_FILES})
+
 #可执行文件
 ADD_EXECUTABLE(${EXEC_NAME} 
                ${SOURCE_FILES}
+               #${MOC_FILES}
                ${MOC_OUTPUTS}
                ${UI_OUTPUTS}
+               ${RCC_OUTPUTS}
                )
 
 #指明可执行文件需要连接的链接库

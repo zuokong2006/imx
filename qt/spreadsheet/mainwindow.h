@@ -52,7 +52,7 @@ private:
 
     Spreadsheet *spreadsheet;
     FindDialog *findDialog;
-    QLabel *locationLael;
+    QLabel *locationLabel;
     QLabel *formulaLabel;
     QStringList recentFiles;
     QString curFile;

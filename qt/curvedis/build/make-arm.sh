@@ -3,9 +3,9 @@
 cd ./
 pwd
 
-if [ -f finddialog ]
+if [ -f curvedis ]
 then 
-    rm finddialog
+    rm curvedis
 fi
 
 cmake TARGET_P=arm ../
