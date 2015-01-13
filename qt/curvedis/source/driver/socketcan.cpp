@@ -16,6 +16,7 @@
 #include <linux/can/raw.h>
 
 #include <QDebug>
+#include <QList>
 #include "socketcan.h"
 
 #ifndef AF_CAN
@@ -51,7 +52,8 @@
 class SocketCanPrivate
 {
 public:
-    int canfd;
+    int nodeList;
+    QList<int> nodeList;
     SocketCanPrivate();
     ~SocketCanPrivate();
     int writeFrame(struct can_frame *pframe);
@@ -61,7 +63,9 @@ public:
 
 SocketCanPrivate::SocketCanPrivate()
 {
-
+    nodeList.append(1);
+    nodeList.append(2);
+    nodeList.append(3);
 }
 
 SocketCanPrivate::~SocketCanPrivate()
@@ -180,13 +184,22 @@ int SocketCan::openCan()
     /* CAN过滤器设置 
      * kernel\Documentation\networking\can.txt
      * <received_can_id> & mask == can_id & mask */
-    struct can_filter filter[3];
-    filter[0].can_id = (1<<22) | (NODE_NUM<<16) | CAN_EFF_FLAG;
-    filter[0].can_mask = (1<<22) | (NODE_NUM<<16);
-    filter[1].can_id = (2<<22) | (NODE_NUM<<16) | CAN_EFF_FLAG;
-    filter[1].can_mask = (2<<22) | (NODE_NUM<<16);
-    filter[2].can_id = (3<<22) | (NODE_NUM<<16) | CAN_EFF_FLAG;
-    filter[2].can_mask = (3<<22) | (NODE_NUM<<16);
+    struct can_filter filter[d->nodeList.size()];
+    int n = 0;
+    QList<int>::const_iterator i = d->nodeList.begin();
+    while(i != d->nodeList.end())
+    {
+        filter[n].can_id = ((*i)<<22) | (NODE_NUM<<16) | CAN_EFF_FLAG;
+        filter[n].can_mask = ((*i)<<22) | (NODE_NUM<<16);
+        i++;
+        n++;
+    }
+    //filter[0].can_id = (1<<22) | (NODE_NUM<<16) | CAN_EFF_FLAG;
+    //filter[0].can_mask = (1<<22) | (NODE_NUM<<16);
+    //filter[1].can_id = (2<<22) | (NODE_NUM<<16) | CAN_EFF_FLAG;
+    //filter[1].can_mask = (2<<22) | (NODE_NUM<<16);
+    //filter[2].can_id = (3<<22) | (NODE_NUM<<16) | CAN_EFF_FLAG;
+    //filter[2].can_mask = (3<<22) | (NODE_NUM<<16);
     ret = setsockopt(d->canfd, SOL_CAN_RAW, CAN_RAW_FILTER, &filter, sizeof(filter));
     /* 禁用接收过滤规则 */
     //ret = setsockopt(d->canfd, SOL_CAN_RAW, CAN_RAW_FILTER, NULL, 0);
