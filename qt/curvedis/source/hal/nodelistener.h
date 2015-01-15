@@ -13,12 +13,12 @@ public:
     NodeListener();
     ~NodeListener();
     void setCan(SocketCan *can);
-    
+
 signals:
-    void frameReceived(int node, char *data, int datalen);
-    
+    void frameReceived(int node, quint8 *data, int datalen);
+
 protected:
-    void run();
+    virtual void run();
 
 private:
     SocketCan *can;

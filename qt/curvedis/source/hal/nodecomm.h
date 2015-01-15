@@ -12,13 +12,12 @@ class NodeComm : public QObject
 public:
     NodeComm();
     ~NodeComm();
-    //int 
-    syncSend(); //同步发送
-    asyncSend(); //异步发送
+    //syncSend(); //同步发送
+    //asyncSend(); //异步发送
 signals:
-    
-    
+
 private slots:
+    void frameProcess(int node, quint8 *data, int datalen);
 
 private:
     NodeCommPrivate *d;

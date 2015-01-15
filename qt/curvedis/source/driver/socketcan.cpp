@@ -52,7 +52,7 @@
 class SocketCanPrivate
 {
 public:
-    int nodeList;
+    int canfd;
     QList<int> nodeList;
     SocketCanPrivate();
     ~SocketCanPrivate();
@@ -66,11 +66,13 @@ SocketCanPrivate::SocketCanPrivate()
     nodeList.append(1);
     nodeList.append(2);
     nodeList.append(3);
+    nodeList.append(4);
+    nodeList.append(5);
 }
 
 SocketCanPrivate::~SocketCanPrivate()
 {
-    
+
 }
 
 int SocketCanPrivate::writeFrame(struct can_frame *pframe)
@@ -102,7 +104,7 @@ int SocketCanPrivate::printFrame(struct can_frame *pframe)
         strcat(buf, tmp);
     }
     printf("ID=0x%08x, DLC=%d, DATA=%s\r\n", \
-        pframe->can_id & CAN_EFF_MASK, pframe->can_dlc, buf);
+        pframe->can_id, pframe->can_dlc, buf);
 }
 
 int SocketCanPrivate::printErrFrame(struct can_frame *pframe)
@@ -181,40 +183,32 @@ int SocketCan::openCan()
         qWarning() << "bind failed!";
         return -1;
     }
-    /* CAN过滤器设置 
+#if 1
+    /* CAN过滤器设置
      * kernel\Documentation\networking\can.txt
      * <received_can_id> & mask == can_id & mask */
-    struct can_filter filter[d->nodeList.size()];
-    int n = 0;
-    QList<int>::const_iterator i = d->nodeList.begin();
-    while(i != d->nodeList.end())
-    {
-        filter[n].can_id = ((*i)<<22) | (NODE_NUM<<16) | CAN_EFF_FLAG;
-        filter[n].can_mask = ((*i)<<22) | (NODE_NUM<<16);
-        i++;
-        n++;
-    }
-    //filter[0].can_id = (1<<22) | (NODE_NUM<<16) | CAN_EFF_FLAG;
-    //filter[0].can_mask = (1<<22) | (NODE_NUM<<16);
-    //filter[1].can_id = (2<<22) | (NODE_NUM<<16) | CAN_EFF_FLAG;
-    //filter[1].can_mask = (2<<22) | (NODE_NUM<<16);
-    //filter[2].can_id = (3<<22) | (NODE_NUM<<16) | CAN_EFF_FLAG;
-    //filter[2].can_mask = (3<<22) | (NODE_NUM<<16);
+    struct can_filter filter[1];
+    filter[0].can_id = (NODE_NUM<<16) | CAN_EFF_FLAG;
+    filter[0].can_mask = (NODE_NUM<<16);
+    qDebug("id:0x%08x mask:0x%08x", filter[0].can_id, filter[0].can_mask);
     ret = setsockopt(d->canfd, SOL_CAN_RAW, CAN_RAW_FILTER, &filter, sizeof(filter));
-    /* 禁用接收过滤规则 */
-    //ret = setsockopt(d->canfd, SOL_CAN_RAW, CAN_RAW_FILTER, NULL, 0);
+#else
+    ret = setsockopt(d->canfd, SOL_CAN_RAW, CAN_RAW_FILTER, NULL, 0);
+#endif
     if(ret < 0)
     {
         qWarning() << "setsockopt failed!";
         return -1;
     }
-    
+    qDebug() << "SocketCan: open can!";
+
     return 0;
 }
 
 int SocketCan::closeCan()
 {
     close(d->canfd);
+    qWarning() << "SocketCan: close can!";
     return 0;
 }
 
@@ -228,7 +222,7 @@ int SocketCan::readData(int &node, char *pdata, int maxlen)
 {
     int ret = 0;
     struct can_frame canframebuf = {0};
-    
+
     if((d->canfd <= 0) || (NULL == pdata))
     {
         qWarning() << "input param error!";
@@ -241,13 +235,13 @@ int SocketCan::readData(int &node, char *pdata, int maxlen)
     }
     /* 判断设备是否错误 */
     if(canframebuf.can_id & CAN_ERR_FLAG)
-    { 
+    {
         d->printErrFrame(&canframebuf);
         qWarning() << "CAN device error!";
         return -1;
     }
     /* 获取数据源地址 */
-    node = (canframebuf.can_id >> 22) & 0x1f; 
+    node = (canframebuf.can_id >> 22) & 0x1f;
     if(maxlen < canframebuf.can_dlc)
     {
         qWarning() << "datalen overflow!";
@@ -256,7 +250,7 @@ int SocketCan::readData(int &node, char *pdata, int maxlen)
     memcpy(pdata, canframebuf.data, canframebuf.can_dlc);
     /* 打印CAN数据帧 */
     d->printFrame(&canframebuf);
-    
+
     return canframebuf.can_dlc;
 }
 
@@ -266,7 +260,7 @@ int SocketCan::writeData(int node, const char *pdata, int datalen)
     int i = 0;
     unsigned char ucCnt = 0;
     unsigned short unTemp = 0;
-    
+
     if((NULL == pdata) || (1 > datalen))
     {
         qWarning() << "input param error!";
@@ -357,6 +351,40 @@ int SocketCan::writeData(int node, const char *pdata, int datalen)
     return datalen;
 }
 
+int SocketCan::nodeSize()
+{
+    return d->nodeList.size();
+}
 
+bool SocketCan::isNode(int node)
+{
+    QList<int>::const_iterator i = d->nodeList.begin();
+    while(i != d->nodeList.end())
+    {
+        if(*i == node)
+        {
+            return true;
+        }
+        i++;
+    }
 
+    return false;
+}
+
+int SocketCan::nodeIndex(int node)
+{
+    int n = 0;
+    QList<int>::const_iterator i = d->nodeList.begin();
+    while(i != d->nodeList.end())
+    {
+        if(*i == node)
+        {
+            return n;
+        }
+        i++;
+        n++;
+    }
+
+    return -1;
+}
 

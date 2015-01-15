@@ -14,8 +14,9 @@ public:
     int getFd();
     int readData(int &node, char *pdata, int maxlen);
     int writeData(int node, const char *pdata, int datalen);
-    int getNodeNum();
+    int nodeSize();
     bool isNode(int node);
+    int nodeIndex(int node);
 private:
     SocketCanPrivate *d;
 };
