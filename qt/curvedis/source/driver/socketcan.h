@@ -2,6 +2,9 @@
 #ifndef __SOCKETCAN_H
 #define __SOCKETCAN_H
 
+/* 节点号定义 */
+#define NODE_NUM                15
+
 class SocketCanPrivate;
 
 class SocketCan

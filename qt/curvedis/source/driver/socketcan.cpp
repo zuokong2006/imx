@@ -26,9 +26,6 @@
 #define PF_CAN AF_CAN
 #endif
 
-/* 节点号定义 */
-#define NODE_NUM                15
-
 /* CAN报文标识符定义 */
 /* 源节点地址mask */
 #define SRC_ID_MASK             0x07C00000

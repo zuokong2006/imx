@@ -10,6 +10,8 @@ SET(HEADER_FILES
     nodelistener.h
     nodeprotocol.h
     nodeprotocolres.h
+    nodeprotocolobject.h
+    halcomm.h
     )
 
 #源文件
@@ -17,6 +19,8 @@ SET(SOURCE_FILES
     nodecomm.cpp
     nodeprotocol.cpp
     nodelistener.cpp
+    nodeprotocolobject.cpp
+    halcomm.cpp
     )
 
 #moc文件Q_OBJECT
