@@ -12,6 +12,7 @@ SET(HEADER_FILES
     nodeprotocolres.h
     nodeprotocolobject.h
     halcomm.h
+    haltemperature.h
     )
 
 #源文件
@@ -21,6 +22,7 @@ SET(SOURCE_FILES
     nodelistener.cpp
     nodeprotocolobject.cpp
     halcomm.cpp
+    haltemperature.cpp
     )
 
 #moc文件Q_OBJECT

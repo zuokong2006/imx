@@ -213,7 +213,7 @@ int NodeCommPrivate::syncSend(int node, quint8 ctlCode, quint8 cmdType, \
                     quint16 errcode = (asynObject->cmdParam(0)) << 8;
                     errcode &= 0xff00;
                     errcode |= (asynObject->cmdParam(1));
-                    qDebug() << "return evt errcode=" << errcode;
+                    qDebug("return evt errcode=0x%x", errcode);
                     res = -errcode;
                 }
                 else
@@ -255,12 +255,14 @@ NodeComm::~NodeComm()
 void NodeComm::start()
 {
     d->listener->start();
-    d->asyncSend(2, 0x00, 0x01, 0x00, 0x00, NULL, 0);
-    d->asyncSend(5, 0x00, 0x01, 0x00, 0x00, NULL, 0);
-    d->asyncSend(2, 0x00, 0x01, 0x00, 0x00, NULL, 0);
+    connect(d->listener, SIGNAL(frameReceived(int, quint8*, int)), \
+            this, SLOT(frameReady(int, quint8*, int)), Qt::DirectConnection);
+    //d->asyncSend(2, 0x00, 0x01, 0x00, 0x00, NULL, 0);
+    //d->asyncSend(5, 0x00, 0x01, 0x00, 0x00, NULL, 0);
+    //d->asyncSend(2, 0x00, 0x01, 0x00, 0x00, NULL, 0);
 
     quint8 buf[16];
-    int res = this->query(2, 0x01, 0x00, 0x00, NULL, 0, buf, 16);
+    int res = this->query(1, 0x01, 0x00, 0x01, NULL, 0, buf, 16);
     if(0 < res)
     {
         QString str;
@@ -278,7 +280,7 @@ int NodeComm::query(int node, quint8 cmdType, quint8 cmdNum, quint8 cmdContent, 
 {
     return d->syncSend(node, FRAME_CONTROL_CODE_COMMAND_REP, \
                        cmdType, cmdNum, cmdContent, cmdParam, paramLen, \
-                       FRAME_CONTROL_CODE_REP, retData, retLen, 400);
+                       FRAME_CONTROL_CODE_REP, retData, retLen, 500);
 }
 
 /* 同步发送 */
@@ -332,6 +334,13 @@ int NodeComm::asyncSend(int node, quint8 ctlCode, quint8 cmdType, quint8 cmdNum,
 /* 接收到数据帧 */
 void NodeComm::frameReady(int node, quint8 *data, int datalen)
 {
+    QString str;
+    for(int i=0; i<datalen; i++)
+    {
+        str += QString("0x%1 ").arg(data[i], 2, 16, QChar('0'));
+    }
+    qDebug() << "frameReady node:" << node << ", data:" << str;
+
     /* 帧解码 */
     NodeProtocolObject* object = d->allocProtocolObject();
     if(0 > d->toObject(node, data, datalen, object))

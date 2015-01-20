@@ -88,7 +88,7 @@ void NodeListener::run()
                             if(0 < res)
                             {
                                 emit frameReceived(node, parse[index].frameBuf(), res);
-                                qDebug() << node << res;
+                                //qDebug() << node << res;
                             }
                         }
                     }
