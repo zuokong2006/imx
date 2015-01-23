@@ -164,7 +164,7 @@ int NodeCommPrivate::asyncSend(int node, quint8 ctlCode, quint8 cmdType, \
         }
         if(frameLen != can->writeData(node, (const char *)frameBuf, frameLen))
         {
-            qWarning() << "malloc frame buf error!";
+            qWarning() << "can write data error!";
             break;
         }
         res = 0;
@@ -280,7 +280,7 @@ int NodeComm::query(int node, quint8 cmdType, quint8 cmdNum, quint8 cmdContent, 
 {
     return d->syncSend(node, FRAME_CONTROL_CODE_COMMAND_REP, \
                        cmdType, cmdNum, cmdContent, cmdParam, paramLen, \
-                       FRAME_CONTROL_CODE_REP, retData, retLen, 500);
+                       FRAME_CONTROL_CODE_REP, retData, retLen, 200);
 }
 
 /* Í¬²½·¢ËÍ */

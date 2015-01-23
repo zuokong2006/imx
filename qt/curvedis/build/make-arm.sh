@@ -4,7 +4,7 @@ cd ./
 pwd
 
 if [ -f curvedis ]
-then 
+then
     rm curvedis
 fi
 

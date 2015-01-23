@@ -33,18 +33,18 @@ MESSAGE(STATUS "compiler: ${CMAKE_CXX_COMPILER}, flags: ${CMAKE_C_FLAGS}")
 #set(EXEC_NAME curvedis)
 
 #头文件
-#SET(HEADER_FILES 
+#SET(HEADER_FILES
 #    #finddialog.h
 #    )
 
 #源文件
-#SET(SOURCE_FILES 
+#SET(SOURCE_FILES
 #    #main.cpp
 #    #finddialog.cpp
 #    )
 
 #moc文件Q_OBJECT
-#set(MOC_FILES 
+#set(MOC_FILES
 #    #finddialog.h
 #    )
 
@@ -61,7 +61,7 @@ MESSAGE(STATUS "compiler: ${CMAKE_CXX_COMPILER}, flags: ${CMAKE_C_FLAGS}")
 ADD_SUBDIRECTORY(source)
 
 #可执行文件
-#ADD_EXECUTABLE(${EXEC_NAME} 
+#ADD_EXECUTABLE(${EXEC_NAME}
 #               source
                #${SOURCE_FILES}
                #${MOC_OUTPUTS}

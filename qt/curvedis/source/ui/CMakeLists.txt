@@ -1,9 +1,6 @@
 #datte: 2015-01-20
 #author: zuokongxiao
 
-#FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui REQUIRED)
-#INCLUDE(${QT_USE_FILE})
-
 #头文件
 SET(HEADER_FILES
     mainwindow.h
@@ -27,10 +24,15 @@ set(UI_FILES
 MESSAGE(STATUS "ui binary dir: " ${CMAKE_CURRENT_BINARY_DIR})
 
 #包含目录
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}
+INCLUDE_DIRECTORIES(${QT_INCLUDES}
                     ${CMAKE_CURRENT_BINARY_DIR}
-                    ${QT_INCLUDES}
+                    ${CMAKE_CURRENT_SOURCE_DIR}
+                    ${CMAKE_CURRENT_SOURCE_DIR}/temperature
                     )
+
+#包含子目录
+ADD_SUBDIRECTORY(qcustomplot)
+ADD_SUBDIRECTORY(temperature)
 
 #uic
 qt4_wrap_ui(UI_OUTPUTS ${UI_FILES})
@@ -43,4 +45,4 @@ QT4_WRAP_CPP(MOC_OUTPUTS ${MOC_FILES})
 ADD_LIBRARY(ui ${SOURCE_FILES} ${MOC_OUTPUTS} ${UI_OUTPUTS})
 
 #指明可执行文件需要连接的链接库
-TARGET_LINK_LIBRARIES(ui ${QT_LIBRARIES})
+TARGET_LINK_LIBRARIES(ui hal temperature qcustomplot ${QT_LIBRARIES})
