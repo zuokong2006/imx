@@ -30,7 +30,7 @@ void NodeListener::setCan(SocketCan *can)
 void NodeListener::run()
 {
     int node = 0;
-    char buf[16];
+    char buf[250];
     int nodesize = this->can->nodeSize();
     int wrindex[nodesize], rdindex[nodesize];
     quint8 framebuf[nodesize][BUF_SIZE];

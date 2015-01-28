@@ -32,7 +32,7 @@
     </size>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="upgradeButton">
    <property name="geometry">
     <rect>
      <x>210</x>
@@ -42,7 +42,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>PushButton</string>
+    <string>Upgrade</string>
    </property>
   </widget>
  </widget>

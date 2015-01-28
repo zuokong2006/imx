@@ -3,6 +3,7 @@
 #include <QDebug>
 #include "mainwindow.h"
 #include "temperaturewin.h"
+#include "upgradewin.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QDialog(parent)
@@ -24,6 +25,16 @@ void MainWindow::on_tempButton_clicked()
     tempWin->show();
     tempWin->exec();
     delete tempWin;
+    this->show();
+}
+
+void MainWindow::on_upgradeButton_clicked()
+{
+    this->hide();
+    upgradeWin = new UpgradeWin;
+    upgradeWin->show();
+    upgradeWin->exec();
+    delete upgradeWin;
     this->show();
 }
 

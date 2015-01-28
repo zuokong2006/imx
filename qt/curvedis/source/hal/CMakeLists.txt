@@ -13,6 +13,7 @@ SET(HEADER_FILES
     nodeprotocolobject.h
     halcomm.h
     haltemperature.h
+    halupgrade.h
     )
 
 #源文件
@@ -23,6 +24,7 @@ SET(SOURCE_FILES
     nodeprotocolobject.cpp
     halcomm.cpp
     haltemperature.cpp
+    halupgrade.cpp
     )
 
 #moc文件Q_OBJECT

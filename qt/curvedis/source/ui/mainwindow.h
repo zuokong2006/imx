@@ -6,6 +6,7 @@
 #include "../../build/source/ui/ui_mainwindow.h"
 
 class TemperatureWin;
+class UpgradeWin;
 
 class MainWindow : public QDialog, public Ui::MainWindow
 {
@@ -17,9 +18,11 @@ public:
 
 private slots:
     void on_tempButton_clicked();
+    void on_upgradeButton_clicked();
 
 private:
     TemperatureWin *tempWin;
+    UpgradeWin *upgradeWin;
 };
 
 #endif // __MAINWINDOW_H
