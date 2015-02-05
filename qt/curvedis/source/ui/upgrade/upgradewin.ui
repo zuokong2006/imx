@@ -66,7 +66,7 @@
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>150</y>
+     <y>140</y>
      <width>91</width>
      <height>41</height>
     </rect>
@@ -78,8 +78,8 @@
   <widget class="QLineEdit" name="fileEdit">
    <property name="geometry">
     <rect>
-     <x>40</x>
-     <y>200</y>
+     <x>140</x>
+     <y>150</y>
      <width>311</width>
      <height>31</height>
     </rect>
@@ -88,7 +88,7 @@
   <widget class="QPushButton" name="sendButton">
    <property name="geometry">
     <rect>
-     <x>360</x>
+     <x>40</x>
      <y>190</y>
      <width>91</width>
      <height>41</height>
@@ -115,13 +115,42 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>130</y>
+     <y>120</y>
      <width>151</width>
      <height>16</height>
     </rect>
    </property>
    <property name="text">
     <string>Step 2. Send File</string>
+   </property>
+  </widget>
+  <widget class="QProgressBar" name="upgradeProgressBar">
+   <property name="geometry">
+    <rect>
+     <x>140</x>
+     <y>200</y>
+     <width>311</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="value">
+    <number>0</number>
+   </property>
+   <property name="textVisible">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="fpgaRadioButton">
+   <property name="geometry">
+    <rect>
+     <x>300</x>
+     <y>80</y>
+     <width>131</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>FPGA Upgrade</string>
    </property>
   </widget>
   <zorder>resetButton</zorder>
@@ -133,6 +162,8 @@
   <zorder>sendButton</zorder>
   <zorder>label_2</zorder>
   <zorder>label_3</zorder>
+  <zorder>upgradeProgressBar</zorder>
+  <zorder>fpgaRadioButton</zorder>
  </widget>
  <resources/>
  <connections/>

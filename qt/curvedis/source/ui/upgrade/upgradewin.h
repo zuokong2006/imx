@@ -21,9 +21,12 @@ private slots:
     void on_enterButton_clicked();
     void on_browseButton_clicked();
     void on_sendButton_clicked();
+    void on_fpgaRadioButton_toggled(bool checked);
 
 private:
     UpgradeWinPrivate *d;
+    int sendBinFile(const QString &fileName);
+    int sendRpdFile(const QString &fileName);
 };
 
 
