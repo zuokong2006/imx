@@ -298,6 +298,15 @@ void TemperatureWin::on_nodeComboBox_currentIndexChanged(const QString & text )
 {
     d->node = text.toInt();
     qDebug("node=%d", d->node);
+    if(3 == d->node)
+    {
+        d->customPlot->yAxis->setRange(-5, 15);
+    }
+    else
+    {
+        d->customPlot->yAxis->setRange(20, 45);
+    }
+    d->customPlot->replot();
 }
 
 void TemperatureWin::on_chComboBox_currentIndexChanged(const QString & text )
