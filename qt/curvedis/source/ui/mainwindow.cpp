@@ -4,6 +4,7 @@
 #include "mainwindow.h"
 #include "temperaturewin.h"
 #include "upgradewin.h"
+#include "smartcardwin.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QDialog(parent)
@@ -37,5 +38,16 @@ void MainWindow::on_upgradeButton_clicked()
     delete upgradeWin;
     this->show();
 }
+
+void MainWindow::on_testButton_clicked()
+{
+    this->hide();
+    smartcardWin = new SmartcardWin;
+    smartcardWin->show();
+    smartcardWin->exec();
+    delete smartcardWin;
+    this->show();
+}
+
 
 

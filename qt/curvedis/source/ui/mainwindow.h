@@ -7,6 +7,7 @@
 
 class TemperatureWin;
 class UpgradeWin;
+class SmartcardWin;
 
 class MainWindow : public QDialog, public Ui::MainWindow
 {
@@ -19,10 +20,12 @@ public:
 private slots:
     void on_tempButton_clicked();
     void on_upgradeButton_clicked();
+    void on_testButton_clicked();
 
 private:
     TemperatureWin *tempWin;
     UpgradeWin *upgradeWin;
+    SmartcardWin *smartcardWin;
 };
 
 #endif // __MAINWINDOW_H

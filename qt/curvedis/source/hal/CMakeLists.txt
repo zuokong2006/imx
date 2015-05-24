@@ -14,6 +14,7 @@ SET(HEADER_FILES
     halcomm.h
     haltemperature.h
     halupgrade.h
+    halsmartcard.h
     )
 
 #源文件
@@ -25,6 +26,7 @@ SET(SOURCE_FILES
     halcomm.cpp
     haltemperature.cpp
     halupgrade.cpp
+    halsmartcard.cpp
     )
 
 #moc文件Q_OBJECT

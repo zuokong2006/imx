@@ -246,7 +246,7 @@ int SocketCan::readData(int &node, char *pdata, int maxlen)
     }
     memcpy(pdata, canframebuf.data, canframebuf.can_dlc);
     /* ´òÓ¡CANÊý¾ÝÖ¡ */
-    //d->printFrame(&canframebuf);
+    d->printFrame(&canframebuf);
 
     return canframebuf.can_dlc;
 }

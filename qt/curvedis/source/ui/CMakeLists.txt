@@ -29,12 +29,14 @@ INCLUDE_DIRECTORIES(${QT_INCLUDES}
                     ${CMAKE_CURRENT_SOURCE_DIR}
                     ${CMAKE_CURRENT_SOURCE_DIR}/temperature
                     ${CMAKE_CURRENT_SOURCE_DIR}/upgrade
+                    ${CMAKE_CURRENT_SOURCE_DIR}/smartcard
                     )
 
 #包含子目录
 ADD_SUBDIRECTORY(qcustomplot)
 ADD_SUBDIRECTORY(temperature)
 ADD_SUBDIRECTORY(upgrade)
+ADD_SUBDIRECTORY(smartcard)
 
 #uic
 qt4_wrap_ui(UI_OUTPUTS ${UI_FILES})
@@ -47,4 +49,4 @@ QT4_WRAP_CPP(MOC_OUTPUTS ${MOC_FILES})
 ADD_LIBRARY(ui ${SOURCE_FILES} ${MOC_OUTPUTS} ${UI_OUTPUTS})
 
 #指明可执行文件需要连接的链接库
-TARGET_LINK_LIBRARIES(ui hal temperature qcustomplot upgrade ${QT_LIBRARIES})
+TARGET_LINK_LIBRARIES(ui hal temperature qcustomplot upgrade smartcard ${QT_LIBRARIES})
